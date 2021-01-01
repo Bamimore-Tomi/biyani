@@ -1,4 +1,4 @@
-import os, base64,time
+import os, base64,time,io
 from typing import Optional
 
 from tronapi import Tron
@@ -6,6 +6,7 @@ from tronapi.common.account import PrivateKey
 
 from dotenv import load_dotenv
 import pymongo
+import qrcode
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -61,13 +62,21 @@ class Wallet(Base):
         self._save_wallet()
 
     def load_wallet(self):
-        wallet = db.generated_trx_wallet.find_one({'wallet_address.base58':self.address})
-        if wallet==None:
+        self.wallet = db.generated_trx_wallet.find_one({'wallet_address.base58':self.address})
+        if self.wallet==None:
             raise ValueError('This wallet is not registered here.')
-        self.encrypted_private_key = wallet.get('encrypted_private_key')
+        self.encrypted_private_key = self.wallet.get('encrypted_private_key')
+        self.callback = self.wallet.get('callback')
+        self.input_address = self.wallet.get('input_address')
     def get_balance(self):
         tron = Tron()
         return tron.fromSun(tron.trx.get_balance(self.address))
+    def get_qr_code(self):
+        img = qrcode.make(self.address)
+        imgByteArr = io.BytesIO()
+        img.save(imgByteArr,format=img.format)
+        imgByteArr = imgByteArr.getvalue()
+        return base64.encodebytes(imgByteArr)
     def __str__(self):
         return self.address
     def _save_wallet(self):
@@ -80,13 +89,15 @@ class Wallet(Base):
         'transactions':[],
         'date_generated':time.time()}
         data.update(self.kwargs)
-        print(data)
-        #db.generated_trx_wallet.insert_one(data)
+        db.generated_trx_wallet.insert_one(data)
         return 1
-    def send(self,reciever_address:str,amount:float):
+    def send(self,reciever_address,amount:Optional[float]='max'):
+        if amount=='max':
+            amount = self.get_balance()
         transaction = Transaction(self.encrypted_private_key,reciever_address)
         send = transaction.send_trx(float(amount))
         return send
+    
 
 class Transaction(Base):
     def __init__(self,sender_private_key:str,reciever_address:str):
@@ -98,10 +109,9 @@ class Transaction(Base):
         tron = Tron()
         tron.private_key = self.private_key
         tron.default_address = tron.address.from_private_key(tron.private_key)['base58']
-        #print(tron.private_key,tron.default_address)
         super()._validate_address(self.reciever_address)
         try:
             transaction = tron.trx.send(self.reciever_address, amount)
             return transaction
         except Exception as e:
-            print(e)
+            return {'result':False,'message':'Transaction Failed','verbose':e}
