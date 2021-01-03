@@ -2,5 +2,7 @@
 *__pycache__
 *.env
 Lib/
+share/
+core/testing.py
 Scripts/
 pyvenv.cfg
