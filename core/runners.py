@@ -10,17 +10,6 @@ from core import Wallet
 load_dotenv()
 
 db = pymongo.MongoClient(os.getenv('DB_URL'))[os.getenv('DB_NAME')]
-def runner():
-    tron = Tron()
-    while True:
-        all_address = [i['wallet_address']['hex'] for i in db.generated_trx_wallet.find({})]
-        last_confirmed = tron.trx.get_confirmed_current_block().get('transactions')
-        for i in last_confirmed:
-            values = i.get('raw_data').get('contract')[0].get('parameter').get('value')            
-            if values.get('to_address') in all_address:
-                print(i)
-                return i
-        
 class EventLoop:
     def __init__(self):
         self.db = db

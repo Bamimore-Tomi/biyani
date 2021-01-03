@@ -18,7 +18,8 @@ class CreateWallet:
         if result.get('result')==True:
             return address
         else:
-            raise HTTPException(status_code=418, detail=result.get('message')+' in TRX address')
+            raise HTTPException(status_code=418, detail=result.get('message'))
+
 class CreateWalletResponse(BaseModel):
     output_address : str=Field(...,description='A valid TRX wallet address where that will sent to clients for payment.')
     input_address : str = Field(..., description='A valid TRX where assets recieved in the Output address will be sent to i.e the wallet address you entered when making this request.')
