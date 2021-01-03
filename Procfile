@@ -1,2 +1,2 @@
-web : unvicorn api:app
-worker : python core.runners
+web: uvicorn main:app --host=0.0.0.0 --port=${PORT:-5000}
+worker: python core.runners
