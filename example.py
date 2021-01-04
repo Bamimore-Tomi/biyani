@@ -2,7 +2,7 @@ import requests
 import base64
 
 b = {
-    'callback':'http://56400c5508ca.ngrok.io',
+    'callback':'http://56400c5508ca.ngrok.io/client/trx-testing',
     'address':'TB4zCj53RrzHBVwZBsaaaSHQKiixuNwW7D'
 }
 url = "https://biyani.herokuapp.com​/trx/create"
@@ -12,6 +12,5 @@ print(new_wallet_address)
 ##Get QR code string to bytes
 a = req.get('qr_code').encode()
 png_btyes =  base64.b64decode(a)
-print(png_btyes)
 with open('test.png','wb') as f:
     f.write(png_btyes)
