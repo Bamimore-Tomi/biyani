@@ -12,7 +12,7 @@ Feel free to add functionality for other crypto assets in the format of trx.py.
 
 Check out the documentation @ <https://biyani.herokuapp.com/docs>
 
-#How to use the application
+# How to use the application
 - You query (get request) the <coin>/create endpoint of the application and with valid  `address`(parent wallet) and `callback` url which are required parameters. The response contains an new wallet address. 
 - This new wallet address is shared with users of your platform (clients) to make payments to. 
 - Once payment is made to the new wallet address by the user(client); a post request is made by our systems to your callback url (ensure you include the https protocol and a  nonce parameter in your callback url to ensure the callback data originates from our servers).
