@@ -23,5 +23,5 @@ class CreateWallet:
 class CreateWalletResponse(BaseModel):
     output_address : str=Field(...,description='A valid wallet address where **clients(users)** can send assests to.')
     input_address : str = Field(..., description='A valid wallet address where assets recieved in the Output address will be sent to.')
-    qr_code : bytes = Field(...,description='Convert str to bytes then decode bytes with base64 to get png header bytes to get which can be written to a .png file.')
+    qr_code : bytes = Field(...,description='Convert str to bytes then decode bytes with base64 to get png header bytes which can be written to a .png file to obtain QR code.')
     
