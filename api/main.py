@@ -8,10 +8,6 @@ from .models import CreateWallet , CreateWalletResponse
 from .meta import tags_metadata
 
 from core import Wallet
-from core import EventLoop
-
-#thread = Thread(target=EventLoop().trx_event_loop)
-#thread.start()
 
 app = FastAPI(title='Biyani',
                 description='Testing version of a crypto payment platfrom to enable merchants seamlessly recieve payments.',

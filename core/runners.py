@@ -9,11 +9,10 @@ import requests
 from core import Wallet
 load_dotenv()
 
-db = pymongo.MongoClient(os.getenv('DB_URL'))[os.getenv('DB_NAME')]
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',level=logging.ERROR)
 class EventLoop:
     def __init__(self):
-        self.db = db
+        self.db = pymongo.MongoClient(os.getenv('DB_URL'))[os.getenv('DB_NAME')]
     def trx_event_loop(self):
         client = Tron()
         while True:
@@ -29,9 +28,9 @@ class EventLoop:
                         block_id = last_block.get('blockID')
                         to_address = values.get('to_address')
                         if i!=last_recorded_transaction:
+                            last_recorded_transaction = i
                             p = Process(target=trx_notification,args=(to_address,block_id,i))
                             p.start()
-                            last_recorded_transaction = i
             except Exception as e:
                 ####################Error Protocal#########################
                 last_block_checked = last_block.get('blockID')
@@ -42,6 +41,7 @@ def trx_notification(wallet_address:str,block_id:str,transaction:dict):
     #db.generated_trx_wallet.find_one({'transaction': {'$elemMatch': {'txID':'cf3fd86d2fb3959ba382fa5dd2ae8fd982c392b71fe362597e7829a495540d79l'}}})
     #db.generated_trx_wallet.update_one({'wallet_address.base58':'TEKtkGz9zD6gvj3Pyp3CUekX4bm9FAiVvG'}, {'$push':{'transactions':k}})
     #db.generated_trx_wallet.find_one({'transactions': {'$elemMatch': {'txID':r}}})
+    db = pymongo.MongoClient(os.getenv('DB_URL'))[os.getenv('DB_NAME')]
     client = Tron()
     wallet_address = client.address.from_hex(wallet_address).decode()
     transaction['block_id']=block_id
