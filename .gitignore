@@ -5,5 +5,5 @@ Lib/
 share/
 core/testing.py
 Scripts/
-ping-donodelete.py/
+ping-donodelete.py
 pyvenv.cfg
