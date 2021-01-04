@@ -8,7 +8,7 @@ from starlette.responses import StreamingResponse
 
 @dataclass
 class CreateWallet:
-    callback :  HttpUrl = Query(..., description='The URL the notification will be sent to. It **must** be a valid URL.e.g\n `http://example.com/payment/callback/?invoice=1234&nonce=randomstring`')
+    callback :  HttpUrl = Query(..., description='The URL the notification will be sent to. It **must** be a valid URL.e.g\n `http://example.com/payment/callback/?invoice=1234&nonce=randomstring` which allows a post request.')
     address : str = Query(...,description='Enter a valid **TRX address** where assests received will be sent to.')
     email : EmailStr = Query(None,description='Email address to send payment notifications to.')
     @validator('address')
