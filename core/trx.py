@@ -114,4 +114,5 @@ class Transaction(Base):
             transaction = tron.trx.send(self.reciever_address, amount)
             return transaction
         except Exception as e:
-            return {'result':False,'message':'Transaction Failed','verbose':e}
+            print(e)
+            return {'result':False,'message':'Transaction Failed'}
