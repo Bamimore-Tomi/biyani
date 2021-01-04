@@ -16,7 +16,7 @@ class EventLoop:
     def trx_event_loop(self):
         client = Tron()
         while True:
-            all_wallets = [i['wallet_address']['hex'] for i in db.generated_trx_wallet.find({})]
+            all_wallets = [i['wallet_address']['hex'] for i in self.db.generated_trx_wallet.find({})]
             #Get the last confirmed block
             last_block = client.trx.get_confirmed_current_block()
             try:
@@ -34,7 +34,7 @@ class EventLoop:
             except Exception as e:
                 ####################Error Protocal#########################
                 last_block_checked = last_block.get('blockID')
-                db.trx_wallet_exception.insert_one({'type':'System Shutdown','message':f'System Shutdown at {last_block_checked}','data':str(e)})
+                self.db.trx_wallet_exception.insert_one({'type':'System Shutdown','message':f'System Shutdown at {last_block_checked}','data':str(e)})
                 logging.error(e,exc_info=True)
 
 def trx_notification(wallet_address:str,block_id:str,transaction:dict):
