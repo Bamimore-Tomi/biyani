@@ -19,15 +19,19 @@ class EventLoop:
             all_wallets = [i['wallet_address']['hex'] for i in db.generated_trx_wallet.find({})]
             #Get the last confirmed block
             last_block = client.trx.get_confirmed_current_block()
-            print(last_block)
-            last_transactions = last_block.get('transactions')
-            for i in last_transactions:
-                values = i.get('raw_data').get('contract')[0].get('parameter').get('value')
-                if values.get('to_address') in all_wallets:
-                    block_id = last_block.get('blockID')
-                    to_address = values.get('to_address')
-                    p = Process(target=trx_notification,args=(to_address,block_id,i))
-                    p.start()
+            try:
+                last_transactions = last_block.get('transactions')
+                for i in last_transactions:
+                    values = i.get('raw_data').get('contract')[0].get('parameter').get('value')
+                    if values.get('to_address') in all_wallets:
+                        block_id = last_block.get('blockID')
+                        to_address = values.get('to_address')
+                        p = Process(target=trx_notification,args=(to_address,block_id,i))
+                        p.start()
+            except Exception as e:
+                ####################Error Protocal#########################
+                last_block_checked = last_block.get('blockID')
+                db.trx_wallet_exception.insert_one({'type':'System Shutdown','message':'System Shutdown at {last_block_checked}','data':str(e)})
 
 def trx_notification(wallet_address:str,block_id:str,transaction:dict):
     #db.generated_trx_wallet.find_one({'transaction': {'$elemMatch': {'txID':'cf3fd86d2fb3959ba382fa5dd2ae8fd982c392b71fe362597e7829a495540d79l'}}})
@@ -42,7 +46,9 @@ def trx_notification(wallet_address:str,block_id:str,transaction:dict):
     wallet = Wallet(wallet_address)
     send = wallet.send(wallet.input_address)
     if send.get('result'):
-        data = {'status':'ok','input_transaction':transaction,'output_transaction':send}
+        data = {'status':'ok','input_address':wallet.input_address,'output_address':wallet.address,
+        'amount':wallet.get_balance(),
+        'input_transaction':transaction,'output_transaction':send}
         try:
             #db.trx_wallet_exception
             requests.post(wallet.callback,json=data)
@@ -50,7 +56,7 @@ def trx_notification(wallet_address:str,block_id:str,transaction:dict):
             db.trx_wallet_exception.insert_one({'type':'callback exception','message':exception,'data':data})
     else:
         try:
-            db.trx_wallet_exception.insert_one({'type':'transaction failed','message':send,'data':transaction})
+            db.trx_wallet_exception.insert_one({'type':'transaction failed','message':str(send),'data':transaction})
         except:
             pass
 
