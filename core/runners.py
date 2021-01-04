@@ -19,6 +19,7 @@ class EventLoop:
             all_wallets = [i['wallet_address']['hex'] for i in db.generated_trx_wallet.find({})]
             #Get the last confirmed block
             last_block = client.trx.get_confirmed_current_block()
+            print(last_block)
             last_transactions = last_block.get('transactions')
             for i in last_transactions:
                 values = i.get('raw_data').get('contract')[0].get('parameter').get('value')
