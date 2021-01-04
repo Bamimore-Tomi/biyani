@@ -15,5 +15,5 @@ Check out the documentation @ <https://biyani.herokuapp.com/docs>
 # How to use the application
 - You query (get request) to the `<coin>/create` endpoint of the application and with valid  `address`(parent wallet) and `callback` url which are required parameters. The response contains an new wallet address. 
 - This new wallet address is shared with users of your platform (clients) to make payments to. 
-- Once payment is made to the new wallet address by the user(client); a post request is made by our systems to your callback url (ensure you include the https protocol and a  nonce parameter in your callback url to ensure the callback data originates from our servers).
+- Once payment is made to the new wallet address by the user(client), a post request is made by our systems to your callback url (ensure you include the https protocol and a  nonce parameter in your callback url to ensure the callback data originates from our servers).
 - Once the payment made to the new address is confirmed, the assets are immediately transeferred to the parent wallet and the transcation is completed.
