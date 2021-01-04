@@ -39,7 +39,6 @@ class EventLoop:
 
 def trx_notification(db,wallet_address:str,block_id:str,transaction:dict):
     #db.generated_trx_wallet.find_one({'transaction': {'$elemMatch': {'txID':'cf3fd86d2fb3959ba382fa5dd2ae8fd982c392b71fe362597e7829a495540d79l'}}})
-    #db.generated_trx_wallet.update_one({'wallet_address.base58':'TEKtkGz9zD6gvj3Pyp3CUekX4bm9FAiVvG'}, {'$push':{'transactions':k}})
     #db.generated_trx_wallet.find_one({'transactions': {'$elemMatch': {'txID':r}}})
     client = Tron()
     wallet_address = client.address.from_hex(wallet_address).decode()
